@@ -23,7 +23,7 @@ location_manager.startUpdatingLocation()
 
 def scan(concrete_ssid=None):
     """
-    Loads the CoreWLAN bundle, instantiates an interface(),
+    Loads the CoreWLAN bundle, instantiates a WLAN interface(),
     dumps the list of available networks, including ones with hidden SSIDs,
     then prints the SSID, RSSI, BSSID for each result
 
@@ -35,9 +35,17 @@ def scan(concrete_ssid=None):
                     bundle_path=bundle_path,
                     module_globals=globals())
 
+    # This is the part where we setup the wireless interface
     # pylint: disable-next=undefined-variable
     iface = CWInterface.interface()  # type: ignore # noqa: F821
+    # Here, we scan for all networks by the SSID provided by the user, if applicable
+    # If no SSID was provided, we set that variable to None, which just shows all SSIDs within range of our adapter.
     networks = iface.scanForNetworksWithName_includeHidden_error_(concrete_ssid, True, None)
+
+    # Here, we return a nested dictionary structure where each found SSID is the key for the outer dicts,
+    # and the given parameters ('RSSI', 'BSSID', etc) are the keys for the inner dicts. This only returns
+    # networks that are currently broadcasting SSIDs, so it's possible a user in a very strange environment
+    # will receive empty results, even though there are hidden wireless network(s) available.
     return {
         i.ssid(): {
             'RSSI': i.rssiValue(),
@@ -57,19 +65,25 @@ try:
     # Nothing was returned. Was the SSID misspelled? Dump all available networks to help the user out...
     if filter_ssid is not None and (result == {} or result is None):
         raise ValueError('No matching SSID was found within range.')
+    # Nothing was returned, even though the user did not provide a filter. Are they in a desert?
     elif filter_ssid is None and (result == {} or result is None):
         raise RuntimeError('No SSIDs appear to be within range.')
 
+# This might help the user see their mistake, so just print them all...
 except ValueError as error:
     print(f"WARN: {repr(error)} Attempting to show full list of available SSIDs instead...\n")
     result = scan(None)
 
+# Nothing we can really do here, as there are no visible SSIDs.
+# Just go ahead and skip attempting to generate the table, then exit non-zero.
 except RuntimeError as error:
     print(f"ERROR: {repr(error)} Please ensure your wireless adapter is enabled and working properly " +
           "and that you are within range of at least one wireless network that is broadcasting an SSID.")
     sys.exit(1)
 
+# This block will run whether or not we hit an exception above that should exit.
 finally:
+    # To be extra safe, don't bother generating the results output when there are no results.
     if (result != {} and result is not None):
         # Pretty print the results in a nicely formatted table, thanks to 'tabulate'
         # The column headers will be the keys shown above in the return statement (SSID, RSSI, etc)
