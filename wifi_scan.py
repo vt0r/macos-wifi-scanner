@@ -15,7 +15,7 @@ parse.add_argument("--filter", '-f', help="Single SSID to filter on", default=No
 args = parse.parse_args()
 filter_ssid = args.filter
 
-# Request location access, so that we can view the SSIDs
+# Request location access, so that we can view the SSIDs and MACs
 # pylint: disable-next=no-member
 location_manager = CoreLocation.CLLocationManager.alloc().init()
 location_manager.startUpdatingLocation()
