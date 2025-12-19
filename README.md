@@ -20,9 +20,7 @@ pip3 install -r requirements.txt
 ## Running the script
 
 ```bash
-
 ./wifi_scan.py
-
 ```
 
 ### Sample output
@@ -42,7 +40,7 @@ pip3 install -r requirements.txt
 `wifi_scan.py` supports a `--filter` (`-f`) argument, which can be used to find any particular SSID.
 
 ```bash
-./wifi_scan.py -f SOME_WIFI_SSID
+./wifi_scan.py -f "Some WiFi"
 ```
 
 ...which would result in similar output to the folowing:

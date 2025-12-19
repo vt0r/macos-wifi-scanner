@@ -3,12 +3,13 @@
 wifi_scan.py - a script to dump the list of available SSIDs and basic info
 """
 import argparse
+import sys
 import objc
 import CoreLocation
 from tabulate import tabulate
 
 parse = argparse.ArgumentParser("Hello, I'm a Wi-Fi scanner for macOS\n\n" +
-                                "Please allow the location request for python if prompted.")
+                                "Please accept the location access request for python if prompted.")
 parse.add_argument("--filter", '-f', help="Single SSID to filter on", default=None)
 
 args = parse.parse_args()
@@ -27,7 +28,7 @@ def scan(concrete_ssid=None):
     then prints the SSID, RSSI, BSSID for each result
 
     Optional argument:
-      concrete_ssid - the SSID of one single network to filter on
+      concrete_ssid - default: None - the SSID of one single network to filter on
     """
     bundle_path = '/System/Library/Frameworks/CoreWLAN.framework'
     objc.loadBundle('CoreWLAN',
@@ -49,9 +50,28 @@ def scan(concrete_ssid=None):
     }
 
 
-result = scan(filter_ssid)
+# Try to get the list of results
+try:
+    result = scan(filter_ssid)
 
-if result is None:
-    print("Sorry, couldn't find that SSID")
+    # Nothing was returned. Was the SSID misspelled? Dump all available networks to help the user out...
+    if filter_ssid is not None and (result == {} or result is None):
+        raise ValueError('No matching SSID was found within range.')
+    elif filter_ssid is None and (result == {} or result is None):
+        raise RuntimeError('No SSIDs appear to be within range.')
 
-print(tabulate(result.values(), headers="keys", tablefmt="rounded_outline", showindex=result.keys()))
+except ValueError as error:
+    print(f"WARN: {repr(error)} Attempting to show full list of available SSIDs instead...\n")
+    result = scan(None)
+
+except RuntimeError as error:
+    print(f"ERROR: {repr(error)} Please ensure your wireless adapter is enabled and working properly " +
+          "and that you are within range of at least one wireless network that is broadcasting an SSID.")
+    sys.exit(1)
+
+finally:
+    if (result != {} and result is not None):
+        # Pretty print the results in a nicely formatted table, thanks to 'tabulate'
+        # The column headers will be the keys shown above in the return statement (SSID, RSSI, etc)
+        # Each SSID and its properties will be printed to a row within the table.
+        print(tabulate(result.values(), headers="keys", tablefmt="rounded_outline", showindex=result.keys()))
