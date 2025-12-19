@@ -15,6 +15,7 @@ args = parse.parse_args()
 filter_ssid = args.filter
 
 # Request location access, so that we can view the SSIDs
+# pylint: disable-next=no-member
 location_manager = CoreLocation.CLLocationManager.alloc().init()
 location_manager.startUpdatingLocation()
 
@@ -33,7 +34,8 @@ def scan(concrete_ssid=None):
                     bundle_path=bundle_path,
                     module_globals=globals())
 
-    iface = CWInterface.interface()
+    # pylint: disable-next=undefined-variable
+    iface = CWInterface.interface()  # type: ignore # noqa: F821
     networks = iface.scanForNetworksWithName_includeHidden_error_(concrete_ssid, True, None)
     return {
         i.ssid(): {
