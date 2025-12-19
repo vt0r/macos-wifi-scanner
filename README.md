@@ -28,8 +28,21 @@ pip3 install -r requirements.txt
 ### Sample output
 
 ```python
-{'SOME WIFI': {'BSSID': '11:11:11:11:11:11', 'RSSI': -45},
- 'ANOTHER_WIFI': {'BSSID': '11:11:11:11:11:11', 'RSSI': -57}}
+{'SOME_WIFI': {'BSSID': '11:22:33:44:55:66',
+               'Channel': '11(2GHz)',
+               'Channel Width': '20MHz',
+               'RSSI': -85,
+               'Security': 'WPA2/WPA3 Personal'},
+ 'SOME_OTHER_WIFI': {'BSSID': '22:33:44:55:66:77',
+                     'Channel': '11(2GHz)',
+                     'Channel Width': '20MHz',
+                     'RSSI': -82,
+                     'Security': 'WPA2 Personal'},
+ 'SOME_OTHER_OTHER_WIFI': {'BSSID': '33:44:55:66:77:88',
+                           'Channel': '40(5GHz)',
+                           'Channel Width': '80MHz',
+                           'RSSI': -56,
+                           'Security': 'WPA2 Personal'}}
 ```
 
 ### Further usage info
@@ -43,5 +56,9 @@ pip3 install -r requirements.txt
 ...which would result in similar output to the folowing:
 
 ``` python
-{'SOME WIFI': {'BSSID': '11:11:11:11:11:11', 'RSSI': -45}
+{'SOME_WIFI': {'BSSID': '11:22:33:44:55:66',
+               'Channel': '11(2GHz)',
+               'Channel Width': '20MHz',
+               'RSSI': -85,
+               'Security': 'WPA2/WPA3 Personal'}}
 ```
