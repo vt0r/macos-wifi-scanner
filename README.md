@@ -28,21 +28,13 @@ pip3 install -r requirements.txt
 ### Sample output
 
 ```python
-{'SOME_WIFI': {'BSSID': '11:22:33:44:55:66',
-               'Channel': '11(2GHz)',
-               'Channel Width': '20MHz',
-               'RSSI': -85,
-               'Security': 'WPA2/WPA3 Personal'},
- 'SOME_OTHER_WIFI': {'BSSID': '22:33:44:55:66:77',
-                     'Channel': '11(2GHz)',
-                     'Channel Width': '20MHz',
-                     'RSSI': -82,
-                     'Security': 'WPA2 Personal'},
- 'SOME_OTHER_OTHER_WIFI': {'BSSID': '33:44:55:66:77:88',
-                           'Channel': '40(5GHz)',
-                           'Channel Width': '80MHz',
-                           'RSSI': -56,
-                           'Security': 'WPA2 Personal'}}
+╭───────────────────────┬────────┬───────────────────┬─────────────────┬─────────────────┬─────────────╮
+│                       │   RSSI │ BSSID             │ Security        │ Chan. (Freq.)   │ Bandwidth   │
+├───────────────────────┼────────┼───────────────────┼─────────────────┼─────────────────┼─────────────┤
+│ Some WiFi             │    -90 │ 11:22:33:44:55:66 │ WPA2 Enterprise │ 157(5GHz)       │ 80MHz       │
+│ Some Other WiFi       │    -81 │ 22:33:44:55:66:77 │ WPA2 Personal   │ 11(2GHz)        │ 20MHz       │
+│ Some Other Other WiFi │    -85 │ 33:44:55:66:77:88 │ WPA2 Personal   │ 1(2GHz)         │ 40MHz(+1)   │
+╰───────────────────────┴────────┴───────────────────┴─────────────────┴─────────────────┴─────────────╯
 ```
 
 ### Further usage info
@@ -56,9 +48,9 @@ pip3 install -r requirements.txt
 ...which would result in similar output to the folowing:
 
 ``` python
-{'SOME_WIFI': {'BSSID': '11:22:33:44:55:66',
-               'Channel': '11(2GHz)',
-               'Channel Width': '20MHz',
-               'RSSI': -85,
-               'Security': 'WPA2/WPA3 Personal'}}
+╭───────────┬────────┬───────────────────┬───────────────┬─────────────────┬─────────────╮
+│           │   RSSI │ BSSID             │ Security      │ Chan. (Freq.)   │ Bandwidth   │
+├───────────┼────────┼───────────────────┼───────────────┼─────────────────┼─────────────┤
+│ Some WiFi │    -74 │ 11:22:33:44:55:66 │ WPA2 Personal │ 11(2GHz)        │ 20MHz       │
+╰───────────┴────────┴───────────────────┴───────────────┴─────────────────┴─────────────╯
 ```

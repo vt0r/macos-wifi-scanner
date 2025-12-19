@@ -3,9 +3,9 @@
 wifi_scan.py - a script to dump the list of available SSIDs and basic info
 """
 import argparse
-from pprint import pprint
 import objc
 import CoreLocation
+from tabulate import tabulate
 
 parse = argparse.ArgumentParser("Hello, I'm a Wi-Fi scanner for macOS\n\n" +
                                 "Please allow the location request for python if prompted.")
@@ -40,8 +40,8 @@ def scan(concrete_ssid=None):
             'RSSI': i.rssiValue(),
             'BSSID': i.bssid(),
             'Security': str(i.informationElementData).split('security=')[1].split(',')[0],
-            'Channel': str(i.wlanChannel()).split('channelNumber=')[1].split(',')[0],
-            'Channel Width': str(i.wlanChannel()).split('channelWidth=')[1].split('{')[1].split('}')[0]
+            'Chan. (Freq.)': str(i.wlanChannel()).split('channelNumber=')[1].split(',')[0],
+            'Bandwidth': str(i.wlanChannel()).split('channelWidth=')[1].split('{')[1].split('}')[0]
         }
         for i in networks[0].allObjects() if i.ssid() is not None
     }
@@ -52,4 +52,4 @@ result = scan(filter_ssid)
 if result is None:
     print("Sorry, couldn't find that SSID")
 
-pprint(result)
+print(tabulate(result.values(), headers="keys", tablefmt="rounded_outline", showindex=result.keys()))
