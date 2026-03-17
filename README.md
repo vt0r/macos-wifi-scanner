@@ -1,10 +1,10 @@
 # Mac OS Wifi Scanner
 
-There is no `iwlist` on Mac OS, that is why I've created my own script to get all SSID around me via cli ;)
+macOS has no `iwlist`, so this script aims to fill that gap using macOS-native CoreWLAN and CoreLocation frameworks (PyObjC).
 
 ## Prerequisites
 
-Before running anything, check out the `requirements.txt` and make sure you have everything neccessary to run this script installed. To install all needed requirements:
+Install the required dependencies into a virtual environment:
 
 ```bash
 # Create a Python virtualenv
@@ -25,30 +25,53 @@ pip3 install -r requirements.txt
 
 ### Sample output
 
-```python
-╭───────────────────────┬────────┬───────────────────┬─────────────────┬─────────────────┬─────────────╮
-│                       │   RSSI │ BSSID             │ Security        │ Chan. (Freq.)   │ Bandwidth   │
-├───────────────────────┼────────┼───────────────────┼─────────────────┼─────────────────┼─────────────┤
-│ Some WiFi             │    -90 │ 11:22:33:44:55:66 │ WPA2 Enterprise │ 157(5GHz)       │ 80MHz       │
-│ Some Other WiFi       │    -81 │ 22:33:44:55:66:77 │ WPA2 Personal   │ 11(2GHz)        │ 20MHz       │
-│ Some Other Other WiFi │    -85 │ 33:44:55:66:77:88 │ WPA2 Personal   │ 1(2GHz)         │ 40MHz(+1)   │
-╰───────────────────────┴────────┴───────────────────┴─────────────────┴─────────────────┴─────────────╯
+``` txt
+╭───────────────────────┬────────┬───────────────────┬─────────────────┬────────┬───────┬─────────────╮
+│ SSID                  │   RSSI │ BSSID             │ Security        │ Chan.  │ Freq. │ Bandwidth   │
+├───────────────────────┼────────┼───────────────────┼─────────────────┼────────┼───────┼─────────────┤
+│ Some Other WiFi       │    -81 │ 22:33:44:55:66:77 │ WPA2 Personal   │ 11     │ 2GHz  │ 20MHz       │
+│ Some Other Other WiFi │    -85 │ 33:44:55:66:77:88 │ WPA2 Personal   │ 1      │ 2GHz  │ 40MHz  (+1) │
+│ Some WiFi             │    -90 │ 11:22:33:44:55:66 │ WPA2 Enterprise │ 157    │ 5GHz  │ 80MHz       │
+╰───────────────────────┴────────┴───────────────────┴─────────────────┴────────┴───────┴─────────────╯
 ```
 
-### Further usage info
+### Additional usage info
 
-`wifi_scan.py` supports a `--filter` (`-f`) argument, which can be used to find any particular SSID.
+#### Filtering results by known SSID
+
+`wifi_scan.py` supports a `--filter` (`-f`) argument, which can be used to limit results to any particular SSID.
 
 ```bash
 ./wifi_scan.py -f "Some WiFi"
 ```
 
-...which would result in similar output to the folowing:
+Example output where only one matching network with that specific SSID is being broadcast:
 
-``` python
-╭───────────┬────────┬───────────────────┬───────────────┬─────────────────┬─────────────╮
-│           │   RSSI │ BSSID             │ Security      │ Chan. (Freq.)   │ Bandwidth   │
-├───────────┼────────┼───────────────────┼───────────────┼─────────────────┼─────────────┤
-│ Some WiFi │    -74 │ 11:22:33:44:55:66 │ WPA2 Personal │ 11(2GHz)        │ 20MHz       │
-╰───────────┴────────┴───────────────────┴───────────────┴─────────────────┴─────────────╯
+``` txt
+╭───────────┬────────┬───────────────────┬───────────────┬────────┬───────┬─────────────╮
+│ SSID      │   RSSI │ BSSID             │ Security      │ Chan.  │ Freq. │ Bandwidth   │
+├───────────┼────────┼───────────────────┼───────────────┼────────┼───────┼─────────────┤
+│ Some WiFi │    -74 │ 11:22:33:44:55:66 │ WPA2 Personal │ 11     │ 2GHz  │ 20MHz       │
+╰───────────┴────────┴───────────────────┴───────────────┴────────┴───────┴─────────────╯
+```
+
+#### Displaying Hidden SSID Networks
+
+`wifi_scan.py` also supports a `--show-hidden` (`-H`) flag, which includes networks that are not broadcasting an SSID. Hidden networks have an empty "SSID" value.
+
+```bash
+./wifi_scan.py -H
+```
+
+Example output with one hidden network:
+
+``` txt
+╭───────────────────────┬────────┬───────────────────┬─────────────────┬────────┬───────┬─────────────╮
+│ SSID                  │   RSSI │ BSSID             │ Security        │ Chan.  │ Freq. │ Bandwidth   │
+├───────────────────────┼────────┼───────────────────┼─────────────────┼────────┼───────┼─────────────┤
+│                       │    -71 │ 44:33:22:11:00:aa │ WPA2 Personal   │ 1      │ 2GHz  │ 40MHz  (+1) │
+│ Some Other WiFi       │    -81 │ 22:33:44:55:66:77 │ WPA2 Personal   │ 11     │ 2GHz  │ 20MHz       │
+│ Some Other Other WiFi │    -85 │ 33:44:55:66:77:88 │ WPA2 Personal   │ 1      │ 2GHz  │ 40MHz  (+1) │
+│ Some WiFi             │    -90 │ 11:22:33:44:55:66 │ WPA2 Enterprise │ 157    │ 5GHz  │ 80MHz       │
+╰───────────────────────┴────────┴───────────────────┴─────────────────┴────────┴───────┴─────────────╯
 ```
